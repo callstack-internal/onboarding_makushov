@@ -1,20 +1,38 @@
 import React from 'react';
-import {FlatList, SafeAreaView, Text} from 'react-native';
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../navigation/types';
+import {FlatList, Text, StyleSheet, View} from 'react-native';
+import {useWeather} from '../hooks/useWeather';
+import {WeatherItem} from '../components';
+import {CITIES_LIST} from '../constants';
 
-type WeatherProps = NativeStackScreenProps<RootStackParamList, 'Weather'>;
-
-const Weather = ({navigation}: WeatherProps) => {
+const Weather = () => {
+  const {data, isLoading, isError} = useWeather(CITIES_LIST);
+  if (isLoading) {
+    return <Text>Loading...</Text>;
+  }
+  if (isError) {
+    return <Text>Error...</Text>;
+  }
   return (
-    <SafeAreaView>
-      {/* <FlatList
-        data={[1, 2, 3, 4]}
+    <View style={styles.container}>
+      <FlatList
+        data={data}
         keyExtractor={item => item.id}
-        renderItem={({item, index}) => <Text>Weather</Text>}
-      /> */}
-    </SafeAreaView>
+        contentContainerStyle={styles.listContainer}
+        renderItem={({item, index}) => <WeatherItem key={index} data={item} />}
+      />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#E0E0E0',
+    padding: 16,
+  },
+  listContainer: {
+    flexGrow: 1,
+  },
+});
 
 export default Weather;
